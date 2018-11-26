@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">WeatherToaster</string>
+    <string name="api_url">https://api.openweathermap.org/data/2.5/weather?q=Toulouse&amp;APPID=</string>
 </resources>
