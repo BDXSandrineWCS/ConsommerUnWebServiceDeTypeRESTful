@@ -3,6 +3,7 @@ package fr.wcs.weathertoaster;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -11,6 +12,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Method;
@@ -38,7 +41,16 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        //TODO
+                        try {
+                            JSONArray weather = response.getJSONArray("weather");
+                            for (int i = 0; i < weather.length(); i++) {
+                                JSONObject weatherInfos = (JSONObject) weather.get(i);
+                                String description = weatherInfos.getString("description");
+                                Toast.makeText(MainActivity.this, description, Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 },
                 new Response.ErrorListener() {
