@@ -17,6 +17,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.Callable;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,11 +46,19 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            JSONArray weather = response.getJSONArray("weather");
-                            for (int i = 0; i < weather.length(); i++) {
-                                JSONObject weatherInfos = (JSONObject) weather.get(i);
-                                String description = weatherInfos.getString("description");
-                                Toast.makeText(MainActivity.this, description, Toast.LENGTH_SHORT).show();
+                            JSONArray list = response.getJSONArray("list");
+                            int l=0;
+                            while ( l < list.length()) {
+                                JSONObject weatherOccurence = (JSONObject) list.get(l);
+                                long unixDate= weatherOccurence.getLong("dt");
+                                String stringDate = new SimpleDateFormat("dd/MM/yyyy-HH:mm").format(new Date(unixDate*1000));
+                                JSONArray weather = weatherOccurence.getJSONArray("weather");
+                                for (int i = 0; i < weather.length(); i++) {
+                                    JSONObject weatherInfos = (JSONObject) weather.get(i);
+                                    String description = weatherInfos.getString("description");
+                                    Toast.makeText(MainActivity.this, stringDate + " -> " +description, Toast.LENGTH_SHORT).show();
+                                }
+                                l+=8;
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
