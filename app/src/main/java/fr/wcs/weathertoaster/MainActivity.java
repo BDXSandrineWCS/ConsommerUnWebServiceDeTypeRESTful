@@ -3,6 +3,7 @@ package fr.wcs.weathertoaster;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -16,12 +17,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
-import java.util.concurrent.Callable;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,24 +44,30 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(JSONObject response) {
+                        ArrayList<Weather> weathersList = new ArrayList<Weather>(); //for listView mode
                         try {
                             JSONArray list = response.getJSONArray("list");
                             int l=0;
                             while ( l < list.length()) {
                                 JSONObject weatherOccurence = (JSONObject) list.get(l);
                                 long unixDate= weatherOccurence.getLong("dt");
-                                String stringDate = new SimpleDateFormat("dd/MM/yyyy-HH:mm").format(new Date(unixDate*1000));
+                                //For toast mode String stringDate = new SimpleDateFormat("dd/MM/yyyy-HH:mm").format(new Date(unixDate*1000));
                                 JSONArray weather = weatherOccurence.getJSONArray("weather");
+                                String description;
                                 for (int i = 0; i < weather.length(); i++) {
                                     JSONObject weatherInfos = (JSONObject) weather.get(i);
-                                    String description = weatherInfos.getString("description");
-                                    Toast.makeText(MainActivity.this, stringDate + " -> " +description, Toast.LENGTH_SHORT).show();
+                                    description = weatherInfos.getString("description");
+                                    //For toast mode :Toast.makeText(MainActivity.this, stringDate + " -> " +description, Toast.LENGTH_SHORT).show();
+                                    weathersList.add(new Weather(unixDate,description)); //for viewlist mode
                                 }
                                 l+=8;
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        WeatherAdapter weatherAdapter=new WeatherAdapter(getApplicationContext(),weathersList); //for list view mode
+                        ListView listView= (ListView)findViewById(R.id.listWeather);
+                        listView.setAdapter(weatherAdapter);
                     }
                 },
                 new Response.ErrorListener() {
